@@ -17,6 +17,7 @@ public:
 
     Q_INVOKABLE QString generateUniqueId() const;
     Q_INVOKABLE bool sendConversation(const QString &ingestId, const QString &conversation);
+    Q_INVOKABLE void speakMessage( const QString &message );
 
 Q_SIGNALS:
     void activeChanged();
@@ -25,6 +26,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     void handleHealthFinished();
     void handleJsonUploadFinished();
+    void handleSpeakFinished();
 
 private:
     void sendHealth();
