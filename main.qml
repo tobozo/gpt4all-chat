@@ -756,6 +756,10 @@ Window {
                                 listView.isAutoScrolling = false
                             }
                         }
+                        function onResponseInProgressChanged() {
+                            if( !LLM.m_responseInProgress )
+                                Network.speakMessage( LLM.response );
+
                     }
 
                     onContentYChanged: {
