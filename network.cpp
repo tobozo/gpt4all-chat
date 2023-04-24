@@ -131,6 +131,44 @@ bool Network::sendConversation(const QString &ingestId, const QString &conversat
     return packageAndSendJson(ingestId, conversation);
 }
 
+
+
+void Network::speakMessage( const QString &message )
+{
+    QString msg = message;
+    msg = msg.trimmed();
+    if( msg.isEmpty() ) return;
+    QString Server_URL {"http://127.0.0.1:1234/?say="};
+    QString url = Server_URL + message;
+    QUrl GlaDOS_URL(url);
+    QNetworkRequest request(GlaDOS_URL);
+    QNetworkReply *GlaDOS_Reply = m_networkManager.get(request);
+    connect(GlaDOS_Reply, &QNetworkReply::finished, this, &Network::handleSpeakFinished);
+}
+
+
+
+void Network::handleSpeakFinished()
+{
+    QNetworkReply *healthReply = qobject_cast<QNetworkReply *>(sender());
+    if (!healthReply)
+        return;
+    QVariant response = healthReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    Q_ASSERT(response.isValid());
+    bool ok;
+    int code = response.toInt(&ok);
+    if (!ok)
+        qWarning() << "ERROR: Invalid response.";
+    if (code != 200) {
+        qWarning() << "ERROR: response != 200 code:" << code;
+        emit healthCheckFailed(code);
+        setActive(false);
+    }
+    healthReply->deleteLater();
+}
+
+
+
 void Network::sendHealth()
 {
     QUrl healthUrl("https://api.gpt4all.io/v1/health");
